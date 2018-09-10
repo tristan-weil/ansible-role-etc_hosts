@@ -1,0 +1,28 @@
+---
+
+- name: clean /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "{{ item.hostname }}$"
+    state: absent
+    owner: root
+    group: root
+    mode: "0644"
+  when: >
+    item.state | default('present') != 'present'
+    and item.hostname != ""
+  with_items: "{{ etc_hosts_list }}"
+
+- name: populate /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^{{ item.address }} {{ item.hostname }}"
+    line: "{{ item.address }} {{ item.hostname }}"
+    owner: root
+    group: root
+    mode: "0644"
+  when: >
+    item.state | default('present') == 'present'
+    and item.address != ""
+    and item.hostname != ""
+  with_items: "{{ etc_hosts_list }}"
