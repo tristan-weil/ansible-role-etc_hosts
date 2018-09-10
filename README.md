@@ -7,8 +7,8 @@ An Ansible role that allows to add or remove entries in the /etc/hosts file.
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
     etc_hosts_list: []                              # the list of hostnames
-      - hostname:                                   # one or more hostnames
-        address:                                    # the ip adress
+      - hostname: [mandatory]                       # one or more hostnames
+        address: [mandatory]                        # the ip adress
         state: present                              # present|absent
     
 The list of entries to add to /etc/hosts. 
