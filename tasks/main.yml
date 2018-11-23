@@ -11,7 +11,7 @@
   when: >
     item.state | default('present') != 'present'
     and item.hostname != ""
-  with_items: "{{ etc_hosts }}"
+  loop: "{{ etc_hosts }}"
 
 - name: populate /etc/hosts
   lineinfile:
@@ -25,4 +25,4 @@
     item.state | default('present') == 'present'
     and item.address != ""
     and item.hostname != ""
-  with_items: "{{ etc_hosts }}"
+  loop: "{{ etc_hosts }}"
