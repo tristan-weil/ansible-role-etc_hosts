@@ -1,5 +1,6 @@
 ---
 
+# /etc/hosts
 - name: clean /etc/hosts
   lineinfile:
     dest: /etc/hosts
@@ -26,3 +27,74 @@
     and item.address != ""
     and item.hostname != ""
   loop: "{{ etc_hosts }}"
+
+# unbound
+- block:
+    - name: check the unbound conf file exists
+      stat:
+        path: "/etc/unbound/unbound.conf.d/{{ etc_hosts_unbound_file }}"
+      register: _etc_hosts_unbound_path_result
+
+    - name: clean the unbound conf file
+      lineinfile:
+        dest: "/etc/unbound/unbound.conf.d/{{ etc_hosts_unbound_file }}"
+        regexp: "^    local-data: \"{{ item.hostname }} IN A"
+        state: absent
+        owner: root
+        group: root
+        mode: "0640"
+      when: >
+        _etc_hosts_unbound_path_result.stat.exists
+        and item.state | default('present') != 'present'
+        and item.hostname != ""
+      loop: "{{ etc_hosts }}"
+      register: _etc_hosts_unbound_clean
+
+    - name: delete the unbound conf file because it's empty
+      file:
+        dest: "/etc/unbound/unbound.conf.d/{{ etc_hosts_unbound_file }}"
+        state: absent
+      when: >
+        etc_hosts | length == 0
+      register: _etc_hosts_unbound_delete
+
+    - name: populate the unbound conf file (header)
+      lineinfile:
+        dest: "/etc/unbound/unbound.conf.d/{{ etc_hosts_unbound_file }}"
+        line: "server:"
+        insertbefore: BOF
+        owner: root
+        group: root
+        mode: "0640"
+        create: True
+      when: >
+        etc_hosts | length > 0
+      register: _etc_hosts_unbound_pop_header
+
+    - name: populate the unbound conf file
+      lineinfile:
+        dest: "/etc/unbound/unbound.conf.d/{{ etc_hosts_unbound_file }}"
+        regexp: "^    local-data: \"{{ item.hostname }} IN A {{ item.address }}\""
+        line: "    local-data: \"{{ item.hostname }} IN A {{ item.address }}\""
+        owner: root
+        group: root
+        mode: "0640"
+        create: True
+      when: >
+        item.state | default('present') == 'present'
+        and item.address != ""
+        and item.hostname != ""
+      loop: "{{ etc_hosts }}"
+      register: _etc_hosts_unbound_pop
+
+    - name: reload unbound
+      service:
+        name: unbound
+        state: reloaded
+      when: >
+        _etc_hosts_unbound_delete.changed
+        or _etc_hosts_unbound_clean.changed
+        or _etc_hosts_unbound_pop_header.changed
+        or _etc_hosts_unbound_pop.changed
+
+  when: etc_hosts_unbound_file is defined

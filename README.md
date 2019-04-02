@@ -1,17 +1,19 @@
 # Ansible Role: etc_hosts
 
-An Ansible role that allows to add or remove entries in the /etc/hosts file.
+An Ansible role that allows to add or remove entries in the /etc/hosts file and in Unbound if needed.
 
 ## Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
     etc_hosts: []                              # the list of hostnames
-      - hostname: [mandatory]                       # one or more hostnames
-        address: [mandatory]                        # the ip adress
-        state: present                              # present|absent
+      - hostname: [mandatory]                  # one or more hostnames
+        address: [mandatory]                   # the ip adress
+        state: present                         # present|absent
     
-The list of entries to add to /etc/hosts. 
+    etc_hosts_unbound_file: [optional]         # the name of the file where the Unbound configuration will be stored                     
+    
+The list of entries to add to /etc/hosts and in Unbound the `etc_hosts_unbound_file` variable is defined.
 Each item must include one or more `hostname(s)` and the assiocated IP `address`. 
 
 ## Dependencies
