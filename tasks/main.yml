@@ -90,7 +90,7 @@
     - name: reload unbound
       service:
         name: unbound
-        state: reloaded
+        state: restarted
       when: >
         _etc_hosts_unbound_delete.changed
         or _etc_hosts_unbound_clean.changed
