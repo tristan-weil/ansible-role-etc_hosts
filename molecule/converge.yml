@@ -1,0 +1,29 @@
+---
+
+- hosts: all
+  name: 'Converge'
+  become: True
+
+  tasks:
+    - import_role:
+        name: 'ansible-role-etc_hosts'
+      vars:
+        etc_hosts:
+          - hostname: test.domain.local
+            address: 10.10.10.1
+            state: 'present'
+
+    - import_role:
+        name: 'ansible-role-etc_hosts'
+      vars:
+        etc_hosts:
+          - hostname: test2.domain.local
+            address: 10.10.10.2
+            state: 'present'
+
+    - import_role:
+        name: 'ansible-role-etc_hosts'
+      vars:
+        etc_hosts:
+          - hostname: test2.domain.local
+            state: 'absent'

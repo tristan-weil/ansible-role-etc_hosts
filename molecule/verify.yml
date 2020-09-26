@@ -1,0 +1,18 @@
+---
+
+- hosts: all
+  name: 'Verify'
+  become: True
+  gather_facts: True
+
+  tasks:
+    - name: 'slurp /etc/hosts'
+      slurp:
+        path: '/etc/hosts'
+      register: __verify_etchosts_stat
+
+    - name: 'check /etc/hosts content'
+      assert:
+        that:
+          - __verify_etchosts_stat['content'] | b64decode | regex_search("10.10.10.1 test.domain.local", multiline=True)
+          - not __verify_etchosts_stat['content'] | b64decode | regex_search("10.10.10.2 test2.domain.local", multiline=True)

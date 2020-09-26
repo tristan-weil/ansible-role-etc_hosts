@@ -1,53 +1,65 @@
 # Ansible Role: etc_hosts
 
-An Ansible role that allows to add or remove entries in the /etc/hosts file and in Unbound if needed.
+An Ansible Role that allows to add or remove entries in the /etc/hosts file and in Unbound if needed.
+
+**NOTE**: it does not work on Docker.
+
+[![Actions Status](https://github.com/tristan-weil/ansible-role-etc_hosts/workflows/molecule/badge.svg?branch=master)](https://github.com/tristan-weil/ansible-role-etc_hosts/actions)
 
 ## Role Variables
 
-Available variables are listed below, along with default values (see `defaults/main.yml`):
+Available variables are listed below, (see also `defaults/main.yml`).
 
-    etc_hosts: []                              # the list of hostnames
-      - hostname: [mandatory]                  # one or more hostnames
-        address: [mandatory]                   # the ip adress
-        state: present                         # present|absent
-    
-    etc_hosts_unbound_file: [optional]         # the name of the file where the Unbound configuration will be stored                     
-    
-The list of entries to add to /etc/hosts and in Unbound the `etc_hosts_unbound_file` variable is defined.
-Each item must include one or more `hostname(s)` and the assiocated IP `address`. 
+Mandatory variables:
 
-## Dependencies
+| Variable      | Description |
+| :------------ | :---------- |
 
-None.
+Optional variables:
+
+| Variable      | Default | Description |
+| :------------ | :------ | :---------- |
+| etc_hosts     | []      | a list of <*etc_host*> entries |
+
+### <*etc_host*>
+
+A *etc_host* represents an entry of one or more hostnames and an associated IP address.
+
+Mandatory variables:
+
+| Variable      | Description |
+| :------------ | :---------- |
+| hostname      | one or more hostnames |
+| address       | an IP address |
+
+Optional variables:
+
+| Variable      | Default | Description |
+| :------------ | :------ | :---------- |
+| state         | present | *present / asbent*: the state of the entry in the `/etc/hosts` file |
 
 ## Example Playbook
 
-    - hosts: webservers
+    - hosts: 'webservers'
       roles:
-        - role: t18s.fr_etc_hosts
+        - role: 'ansible-role-etc_hosts'
           etc_hosts:
             - hostname: xxxxxx
               address: xx.yy.xx.yy
-              state: present
+              state: 'present'
               
 ## Todo
 
 None.
 
+## Dependencies
+
+None.
+
+## Supported platforms
+
+See [meta/main.yml](https://github.com/tristan-weil/ansible-role-etc_hosts/blob/master/meta/main.yml)
+
 ## License
 
-```
-Copyright (c) 2018, 2019 Tristan Weil <titou@lab.t18s.fr>
-
-Permission to use, copy, modify, and distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-```
+See [LICENSE.md](https://github.com/tristan-weil/ansible-role-etc_hosts/blob/master/LICENSE.md)
